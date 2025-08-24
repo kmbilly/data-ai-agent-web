@@ -6,14 +6,18 @@ import {
   CodeHeaderProps,
   MarkdownTextPrimitive,
   unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
-  useIsMarkdownCodeBlock,
+  useIsMarkdownCodeBlock
 } from "@assistant-ui/react-markdown";
+import { defaultUrlTransform } from 'react-markdown';
 import remarkGfm from "remark-gfm";
-import { FC, memo, useState } from "react";
+import { FC, memo, useEffect, useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
+
+const urlTransform = (url: string) =>
+  url.startsWith('data:') ? url : defaultUrlTransform(url)
 
 const MarkdownTextImpl = () => {
   return (
@@ -21,6 +25,7 @@ const MarkdownTextImpl = () => {
       remarkPlugins={[remarkGfm]}
       className="aui-md"
       components={defaultComponents}
+      urlTransform={urlTransform}
     />
   );
 };
@@ -127,6 +132,25 @@ const defaultComponents = memoizeMarkdownComponents({
         {...props}
       />
     );
+  },
+  img: function SafeImage({ ...props }) {
+    const [loaded, setLoaded] = useState(false);
+    const src = props.src || "";
+    const alt = props.alt || "";
+
+    useEffect(() => {
+      if (typeof src !== 'string' || !src.startsWith("data:")) return; // normal URLs just load directly
+
+      const img = new Image();
+      img.src = src;
+      img.onload = () => setLoaded(true);
+    }, [src]);
+
+    if (typeof src !== 'string' || !src.startsWith("data:")) {
+      return <img src={src} alt={alt} />;
+    }
+
+    return loaded ? <img src={src} alt={alt} /> : <span>Loading image…</span>;
   },
   CodeHeader,
 });

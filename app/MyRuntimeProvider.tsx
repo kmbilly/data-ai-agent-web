@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   AssistantRuntimeProvider,
   TextMessagePart,
+  ThreadAssistantMessagePart,
   ThreadMessage,
   useLocalRuntime,
   type ChatModelAdapter,
@@ -30,46 +31,88 @@ const convertToOpenAIMessages = (messages: readonly ThreadMessage[]):Array<ChatC
     })
 }
 
-const MyModelAdapter: ChatModelAdapter = {
-  async *run({ messages, abortSignal, context }) {
-    console.log(messages)
-    const stream = await openai.chat.completions.create({
-      // model: "moonshotai/kimi-k2:free",
-      model: "z-ai/glm-4.5-air:free",
-      messages: convertToOpenAIMessages(messages),
-      // tools: context.tools,
-      stream: true,
-    });
-    
-    // fetch("http://localhost:8000/v1/chat/completions", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   // forward the messages in the chat to the API
-    //   body: JSON.stringify({
-    //     messages,
-    //   }),
-    //   // if the user hits the "cancel" button or escape keyboard key, cancel the request
-    //   signal: abortSignal,
-    // });
+const makeMyModelAdapter= (model:string = "z-ai/glm-4.5-air:free"): ChatModelAdapter => { 
+  return {
+    async *run({ messages, abortSignal, context }) {
+      console.log(messages)
+      const stream = await openai.chat.completions.create({
+        // model: "moonshotai/kimi-k2:free",
+        model,
+        messages: convertToOpenAIMessages(messages),
+        // tools: context.tools,
+        stream: true,
+      });
+      
+      // fetch("http://localhost:8000/v1/chat/completions", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   // forward the messages in the chat to the API
+      //   body: JSON.stringify({
+      //     messages,
+      //   }),
+      //   // if the user hits the "cancel" button or escape keyboard key, cancel the request
+      //   signal: abortSignal,
+      // });
 
-    let text = "";
-    for await (const part of stream) {
-      text += part.choices[0]?.delta?.content || "";
-      yield {
-        content: [{ type: "text", text }],
-      };
+      let content: ThreadAssistantMessagePart[] = [];
+      let text = "";
+      for await (const part of stream) {
+        const deltaContent = part.choices[0]?.delta?.content || ""
+        if (deltaContent.includes("[Retrieving Data...]")) {
+          if (text.length > 0) {
+            content.push({ type: "text", text });
+            text = "";
+          }
+          yield {
+            content: [
+              ...content,
+              { type: "tool-call", toolCallId: '', toolName: "executeSql", args: {sql: ''}, argsText: 'executeSql' }
+            ],
+          };
+        } else if (deltaContent.includes("[Data retrieved]")) {
+          content.push({ type: "tool-call", toolCallId: '', toolName: "executeSql", args: {sql: ''}, argsText: 'executeSql', result: 'SQL result' })
+          yield {
+            content,
+          };
+        } else if (deltaContent.includes("[Executing Python...]")) {
+          if (text.length > 0) {
+            content.push({ type: "text", text });
+            text = "";
+          }
+          yield {
+            content: [
+              ...content,
+              { type: "tool-call", toolCallId: '', toolName: "executePython", args: {sql: ''}, argsText: 'executePython' }
+            ],
+          };
+        } else if (deltaContent.includes("[Python executed]")) {
+          content.push({ type: "tool-call", toolCallId: '', toolName: "executePython", args: {sql: ''}, argsText: 'executePython', result: 'Python result' })
+          yield {
+            content,
+          };
+        } else {
+          text += deltaContent;
+          yield {
+            content: [
+              ...content,
+              { type: "text", text }],
+          };
+        }
+      }
     }
-  },
+  }
 };
 
 export function MyRuntimeProvider({
+  model,
   children,
 }: Readonly<{
+  model?: string;
   children: ReactNode;
 }>) {
-  const runtime = useLocalRuntime(MyModelAdapter);
+  const runtime = useLocalRuntime(makeMyModelAdapter(model));
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

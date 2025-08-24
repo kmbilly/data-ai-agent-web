@@ -156,3 +156,11 @@
     }
   }
 }
+
+.tool + div.aui-md > p:first-child {
+  @apply mt-5;
+}
+
+p img {
+  @apply my-6;
+}

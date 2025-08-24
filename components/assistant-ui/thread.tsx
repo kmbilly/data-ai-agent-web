@@ -122,9 +122,9 @@ const ThreadWelcomeSuggestions: FC = () => {
           action: "Give me a table showing number of customers per year?",
         },
         {
-          title: "Write code to",
-          label: `demonstrate topological sorting`,
-          action: `Write code to demonstrate topological sorting`,
+          title: "Prepare a chart",
+          label: `showing number of albums of top 5 artists`,
+          action: `Prepare a chart showing number of albums of top 5 artists`,
         },
         {
           title: "Help me write an essay",
@@ -184,7 +184,7 @@ const Composer: FC = () => {
         <ComposerPrimitive.Input
           placeholder="Send a message..."
           className={
-            "bg-muted border-border dark:border-muted-foreground/15 focus:outline-primary placeholder:text-muted-foreground max-h-[calc(50dvh)] min-h-16 w-full resize-none rounded-t-2xl border-x border-t px-4 pt-2 pb-3 text-base outline-none"
+            "bg-muted border-border dark:border-muted-foreground/15 focus:outline-primary placeholder:text-muted-foreground max-h-[calc(50dvh)] min-h-10 w-full resize-none rounded-t-2xl border-x border-t px-4 pt-2 pb-3 text-base outline-none"
           }
           rows={1}
           autoFocus
