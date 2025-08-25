@@ -104,6 +104,18 @@ const ThreadWelcome: FC = () => {
             >
               What data analyis can I help you with today?
             </motion.div>
+            {/* <div className="flex items-center mt-10 text-slate-500"> */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ delay: 0.7 }}
+              // aui-thread-welcome-message-motion-2
+              className="flex items-center mt-10 text-slate-500"
+            >
+              <span className="mr-2">[Sample data available for query:</span>
+              <a className='underline' href="/ai/sample_data.xlsx">in Excel format</a>]
+            </motion.div>
           </div>
         </div>
       </div>
@@ -118,23 +130,23 @@ const ThreadWelcomeSuggestions: FC = () => {
       {[
         {
           title: "Give me a table",
-          label: "showing number of customers per year?",
-          action: "Give me a table showing number of customers per year?",
+          label: "showing total number of littering cases by region",
+          action: "Give me a table showing total number of littering cases by region",
         },
         {
-          title: "Prepare a chart",
-          label: `showing number of albums of top 5 artists`,
-          action: `Prepare a chart showing number of albums of top 5 artists`,
+          title: "Prepare a stacked bar chart",
+          label: `on number of littering case by year and type`,
+          action: `Prepare a stacked bar chart on number of littering case by year and type`,
         },
         {
-          title: "Help me write an essay",
-          label: `about AI chat applications`,
-          action: `Help me write an essay about AI chat applications`,
+          title: "Show me the distribution",
+          label: `of littering cases across regions in a pie chart`,
+          action: `Show me the distribution of littering cases across regions in a pie chart`,
         },
         {
-          title: "What is the weather",
-          label: "in San Francisco?",
-          action: "What is the weather in San Francisco?",
+          title: "Show me the top 10 artists",
+          label: "in terms of number of albums",
+          action: "Show me the top 10 artists in terms of number of albums",
         },
       ].map((suggestedAction, index) => (
         <motion.div
