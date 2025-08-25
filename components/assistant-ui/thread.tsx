@@ -144,9 +144,9 @@ const ThreadWelcomeSuggestions: FC = () => {
           action: `Show me the distribution of littering cases across regions in a pie chart`,
         },
         {
-          title: "Show me the top 10 artists",
-          label: "in terms of number of albums",
-          action: "Show me the top 10 artists in terms of number of albums",
+          title: "Predict the monthly littering case",
+          label: "in the year of 2025 and 2026 and plot the results",
+          action: "Predict the monthly littering case in the year of 2025 and 2026 and plot the results in line chart",
         },
       ].map((suggestedAction, index) => (
         <motion.div
