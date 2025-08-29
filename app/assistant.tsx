@@ -53,7 +53,7 @@ import { ExecutePythonToolUI } from "@/components/tool/ExecutePythonUI";
 
 const models:string[] = [
   'z-ai/glm-4.5-air:free',
-  'moonshotai/kimi-k2:free'
+  // 'moonshotai/kimi-k2:free'
 ]
 
 export const Assistant = () => {

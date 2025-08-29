@@ -129,9 +129,9 @@ const ThreadWelcomeSuggestions: FC = () => {
     <div className="grid w-full gap-2 sm:grid-cols-2">
       {[
         {
-          title: "Give me a table",
-          label: "showing total number of littering cases by region",
-          action: "Give me a table showing total number of littering cases by region",
+          title: "Show me",
+          label: "a total number of littering cases",
+          action: "Show me a total number of littering cases",
         },
         {
           title: "Prepare a stacked bar chart",
